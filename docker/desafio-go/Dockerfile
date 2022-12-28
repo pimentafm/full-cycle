@@ -1,12 +1,15 @@
-FROM golang:1.19
+FROM golang:1.19-alpine as mother
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY fullcycle-rocks.go ./
-COPY run.sh ./
+COPY . .
 
-RUN chmod +x run.sh
+RUN go build -o /main main.go
 
-ENTRYPOINT [ "./run.sh" ]
+FROM scratch
 
-CMD ["fullcycle-rocks.go"]
+WORKDIR /
+
+COPY --from=mother /main /main
+
+ENTRYPOINT [ "/main" ]
